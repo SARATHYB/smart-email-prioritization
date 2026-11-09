@@ -1,0 +1,38 @@
+services:
+  # ============================================================================
+  # FastAPI REST API Backend
+  # ============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: email-prioritization-api
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage:/app/storage
+      - ./.env:/app/.env
+    environment:
+      - INGESTION_SOURCE=mock
+      - MOCK_TARGET_EMAIL=sarathybhas@gmail.com
+      - DATABASE_PATH=storage/emails.db
+    restart: unless-stopped
+
+  # ============================================================================
+  # Streamlit Interactive Dashboard
+  # ============================================================================
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: email-prioritization-dashboard
+    command: streamlit run frontend/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./storage:/app/storage
+      - ./.env:/app/.env
+    depends_on:
+      - api
+    restart: unless-stopped
