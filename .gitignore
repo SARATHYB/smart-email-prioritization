@@ -22,6 +22,11 @@ credentials.json
 *credentials*.json
 !credentials.json.example
 
+# Database and storage
+*.db
+storage/*.db
+storage/emails.db
+
 # Logs and checkpoints
 logs/
 *.log
