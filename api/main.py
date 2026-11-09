@@ -5,7 +5,8 @@ Provides RESTful APIs, Swagger documentation (/docs), and automated lifecycle se
 """
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.logger import get_logger
@@ -53,6 +54,18 @@ app.add_middleware(
 # Register Routers
 app.include_router(emails_router)
 app.include_router(ingestion_router)
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    """Redirects root URL directly to the interactive Swagger API documentation."""
+    return RedirectResponse(url="/docs")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    """Silences browser favicon requests."""
+    return Response(status_code=204)
 
 
 @app.get("/health", tags=["Health"])
